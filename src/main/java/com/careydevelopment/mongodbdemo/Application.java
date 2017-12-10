@@ -1,4 +1,4 @@
-package com.careydevelopment.validationdemo;
+package com.careydevelopment.mongodbdemo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
