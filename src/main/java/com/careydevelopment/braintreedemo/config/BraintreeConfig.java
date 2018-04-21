@@ -12,11 +12,11 @@ import com.braintreegateway.BraintreeGateway;
 @ComponentScan("com.braintreegateway")
 public class BraintreeConfig {
     
-    public static String DEFAULT_CONFIG_FILENAME = "config.properties";
+    private static String CONFIG_FILENAME = "config.properties";
 
     @Bean
     public BraintreeGateway getBraintreeGateway() {
-        File configFile = new File(DEFAULT_CONFIG_FILENAME);
+        File configFile = new File(CONFIG_FILENAME);
         BraintreeGateway gateway = null;
         
         try {
