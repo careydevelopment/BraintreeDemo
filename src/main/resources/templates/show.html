@@ -1,186 +1,79 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <title>Braintree Transaction</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" type="text/css" href="/css/app.css" th:href="@{/css/app.css}" />
-    <link rel="icon" type="image/png" href="/images/favicon.png" th:href="@{/images/favicon.png}"/>
-    <script src="/javascript/vendor/jquery-2.1.4.min.js" th:src="@{/javascript/vendor/jquery-2.1.4.min.js}"></script>
-    <script src="/javascript/vendor/jquery.lettering-0.6.1.min.js" th:src="@{/javascript/vendor/jquery.lettering-0.6.1.min.js}"></script>
-    <script src="/javascript/demo.js" th:src="@{/javascript/demo.js}"></script>
-</head>
-<body>
-  <header class="main">
-    <div class="container wide">
-      <div class="content slim">
-        <div class="set">
-          <div class="fill">
-            <a class="pseudoshop" href="/">PSEUDO<strong>SHOP</strong></a>
-          </div>
+<!DOCTYPE html>
 
-          <div class="fit">
-            <a class="braintree" href="https://developers.braintreepayments.com/guides/drop-in" target="_blank">Braintree</a>
-          </div>
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!--<![endif]-->
+
+    <head>
+        <title>Braintree Transaction Results | Carey Development Demos</title>
+        <meta content="This demo shows how to integrate Braintree with Spring Boot" name="description" />
+        <object th:include="fragments/head :: head" th:remove="tag"></object>
+        
+        <script th:src="@{/javascript/demo.js}"></script>
+    </head>
+    
+    <body class="page-container-bg-solid">
+        <div th:include="fragments/topmenuheader :: header"></div>
+        <div class="page-container">
+            <div class="page-content-wrapper">
+                <div class="page-head" style="background-color:#eff3f8;padding-top:40px">
+                    <div class="container">
+                        <div class="row" style="margin-bottom:30px">
+							<div class="col-md-12">
+								<div th:if="${isSuccess}" class="note note-success">
+                                	<h4 class="block">Success!</h4>
+                                    <p> Your test payment was processed successfully! Check out the details below. </p>
+                                </div>
+                             	<div th:unless="${isSuccess}" class="note note-danger">
+                                	<h4 class="block">Problem</h4>
+                                	<p th:text="${transaction.getStatus()}"></p>
+                                </div>
+    						</div>                    
+                        </div>
+                        <div class="row" style="margin-bottom:30px">
+                            <div class="portlet light portlet-fit ">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="icon-settings font-green"></i>
+                                        <span class="caption-subject font-green sbold uppercase" style="position:relative;top:2px">Transaction Details</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div class="table-scrollable table-scrollable-borderless">
+                                        <table class="table table-hover table-light">
+                                            <thead>
+                                                <tr class="uppercase">
+                                                    <th> ID </th>
+                                                    <th> Type </th>
+                                                    <th> Amount </th>
+                                                    <th> Status </th>
+                                                    <th> Created </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td th:text="${transaction.getId()}"></td>
+                                                    <td th:text="${transaction.getType()}"></td>
+                                                    <td th:text="${transaction.getAmount()}"></td>
+                                                    <td th:text="${transaction.getStatus()}"></td>
+                                                    <td th:text="${new java.text.SimpleDateFormat('yyyy-MM-dd HH:mm:ss Z').format(transaction.getUpdatedAt().getTime())}"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>                                
+                            </div>
+                            
+                            <button type="button" class="btn green" style="margin-top:15px" onclick="location.href='/checkouts/new'">Another Transaction</button>
+                            
+                        </div> 
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </header>
-
-  <div class="wrapper">
-    <div class="response container">
-      <div class="content">
-        <div class="icon">
-          <img th:if="${isSuccess}" src="/images/success.svg" th:src="@{/images/success.svg}" alt="" />
-          <img th:unless="${isSuccess}" src="/images/fail.svg" th:src="@{/images/fail.svg}" alt="" />
-        </div>
-
-        <div th:if="${isSuccess}">
-          <h1>Sweet Success!</h1>
-          <section>Your test transaction has been successfully processed. See the Braintree API response and try again.</section>
-        </div>
-        <div th:unless="${isSuccess}">
-          <h1>Transaction Failed</h1>
-          <section>Your test transaction has a status of <span th:text="${transaction.getStatus()}"/>. See the Braintree API response and try again.</section>
-        </div>
-
-        <section>
-          <a class="button primary back" href="/checkouts/new">
-            <span>Test Another Transaction</span>
-          </a>
-        </section>
-      </div>
-    </div>
-  </div>
-
-  <aside class="drawer dark">
-    <header>
-      <div class="content compact">
-        <a href="https://developers.braintreepayments.com" class="braintree" target="_blank">Braintree</a>
-        <h3>API Response</h3>
-      </div>
-    </header>
-
-    <article class="content compact">
-    <section>
-      <h5>Transaction</h5>
-        <table cellpadding="0" cellspacing="0">
-          <tbody>
-            <tr>
-              <td>id</td>
-              <td th:text="${transaction.getId()}"></td>
-            </tr>
-            <tr>
-              <td>type</td>
-              <td th:text="${transaction.getType()}"></td>
-            </tr>
-            <tr>
-              <td>amount</td>
-              <td th:text="${transaction.getAmount()}"></td>
-            </tr>
-            <tr>
-              <td>status</td>
-              <td th:text="${transaction.getStatus()}"></td>
-            </tr>
-            <tr>
-              <td>created_at</td>
-              <td th:text="${new java.text.SimpleDateFormat('yyyy-MM-dd HH:mm:ss Z').format(transaction.getCreatedAt().getTime())}"></td>
-            </tr>
-            <tr>
-              <td>updated_at</td>
-              <td th:text="${new java.text.SimpleDateFormat('yyyy-MM-dd HH:mm:ss Z').format(transaction.getUpdatedAt().getTime())}"></td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section>
-        <h5>Payment</h5>
-
-        <table cellpadding="0" cellspacing="0">
-          <tbody>
-            <tr>
-              <td>token</td>
-              <td th:text="${creditCard.getToken()}"></td>
-            </tr>
-            <tr>
-              <td>bin</td>
-              <td th:text="${creditCard.getBin()}"></td>
-            </tr>
-            <tr>
-              <td>last_4</td>
-              <td th:text="${creditCard.getLast4()}"></td>
-            </tr>
-            <tr>
-              <td>card_type</td>
-              <td th:text="${creditCard.getCardType()}"></td>
-            </tr>
-            <tr>
-              <td>expiration_date</td>
-              <td th:text="${creditCard.getExpirationDate()}"></td>
-            </tr>
-            <tr>
-              <td>cardholder_name</td>
-              <td th:text="${creditCard.getCardholderName()}"></td>
-            </tr>
-            <tr>
-              <td>customer_location</td>
-              <td th:text="${creditCard.getCustomerLocation()}"></td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section th:if="${customer.getId()}">
-        <h5>Customer Details</h5>
-
-        <table cellpadding="0" cellspacing="0">
-          <tbody>
-            <tr>
-              <td>id</td>
-              <td th:text="${customer.getId()}"></td>
-            </tr>
-            <tr>
-              <td>first_name</td>
-              <td th:text="${customer.getFirstName()}"></td>
-            </tr>
-            <tr>
-              <td>last_name</td>
-              <td th:text="${customer.getLastName()}"></td>
-            </tr>
-            <tr>
-              <td>email</td>
-              <td th:text="${customer.getEmail()}"></td>
-            </tr>
-            <tr>
-              <td>company</td>
-              <td th:text="${customer.getCompany()}"></td>
-            </tr>
-            <tr>
-              <td>website</td>
-              <td th:text="${customer.getWebsite()}"></td>
-            </tr>
-            <tr>
-              <td>phone</td>
-              <td th:text="${customer.getPhone()}"></td>
-            </tr>
-            <tr>
-              <td>fax</td>
-              <td th:text="${customer.getFax()}"></td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section>
-        <p class="center small">Integrate with the Braintree SDK for a secure and seamless checkout</p>
-      </section>
-
-      <section>
-        <a class="button secondary full" href="https://developers.braintreepayments.com/guides/drop-in" target="_blank">
-          <span>See the Docs</span>
-        </a>
-      </section>
-    </article>
-  </aside>
-</body>
+        <div th:include="fragments/homefooter :: footer"></div>
+		<script th:src="@{/javascript/demo.js}"></script>
+    </body>
 </html>
