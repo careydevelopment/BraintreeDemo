@@ -63,7 +63,7 @@ public class CheckoutController {
         model.addAttribute("clientToken", clientToken);
         
         //serve new.html
-        return "new";
+        return "newTransaction";
     }
 
     /**
@@ -80,14 +80,17 @@ public class CheckoutController {
         BigDecimal decimalAmount;
         
         try {
+            //get the decimal version of the text entered
             decimalAmount = new BigDecimal(amount);
         } catch (NumberFormatException e) {
+            //we get here if it's not a valid number
             String errorMessage = getErrorMessage(amount);
             redirectAttributes.addFlashAttribute("errorDetails", errorMessage);
             redirectAttributes.addFlashAttribute("amount", amount);
             return "redirect:checkouts";
         }
 
+        //submit the request for processing
         TransactionRequest request = new TransactionRequest()
             .amount(decimalAmount)
             .paymentMethodNonce(nonce)
@@ -95,8 +98,10 @@ public class CheckoutController {
                 .submitForSettlement(true)
                 .done();
 
+        //get the response
         Result<Transaction> result = gateway.transaction().sale(request);
 
+        //if it's a successful transaction, go to the transaction results page
         if (result.isSuccess()) {
             Transaction transaction = result.getTarget();
             return "redirect:checkouts/" + transaction.getId();
@@ -104,16 +109,21 @@ public class CheckoutController {
             Transaction transaction = result.getTransaction();
             return "redirect:checkouts/" + transaction.getId();
         } else {
+            //if the transaction failed, return to the payment page and display all errors
             String errorString = "";
             for (ValidationError error : result.getErrors().getAllDeepValidationErrors()) {
                errorString += "Error: " + error.getCode() + ": " + error.getMessage() + "\n";
             }
             redirectAttributes.addFlashAttribute("errorDetails", errorString);
+            redirectAttributes.addFlashAttribute("amount", amount);
             return "redirect:checkouts";
         }
     }
 
     
+    /**
+     * Creates the server-side error message
+     */
     private String getErrorMessage(String amount) {
         String errorMessage = amount + " is not a valid price.";
 
@@ -124,7 +134,11 @@ public class CheckoutController {
         return errorMessage;
     }
     
-    
+
+    /**
+     * We get here when the user has submitted a transaction and received a
+     * Transaction ID.
+     */
     @RequestMapping(value = "/checkouts/{transactionId}")
     public String getTransaction(@PathVariable String transactionId, Model model) {
         Transaction transaction;
@@ -132,19 +146,28 @@ public class CheckoutController {
         Customer customer;
 
         try {
+            //find the transaction by its ID
             transaction = gateway.transaction().find(transactionId);
+            
+            //grab credit card info
             creditCard = transaction.getCreditCard();
+            
+            //grab the customer info
             customer = transaction.getCustomer();
         } catch (Exception e) {
             System.out.println("Exception: " + e);
             return "redirect:/checkouts";
         }
 
+        //set a boolean that determines whether or not the transaction was successful
         model.addAttribute("isSuccess", Arrays.asList(TRANSACTION_SUCCESS_STATUSES).contains(transaction.getStatus()));
+        
+        //put the relevant objects in the model
         model.addAttribute("transaction", transaction);
         model.addAttribute("creditCard", creditCard);
         model.addAttribute("customer", customer);
 
-        return "show";
+        //server transactionResults.html
+        return "transactionResults";
     }
 }

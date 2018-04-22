@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import com.braintreegateway.BraintreeGateway;
+import com.careydevelopment.braintreedemo.util.BraintreeGatewayFactory;
 
 @Configuration
 @ComponentScan("com.braintreegateway")

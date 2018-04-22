@@ -1,4 +1,4 @@
-package com.careydevelopment.braintreedemo.config;
+package com.careydevelopment.braintreedemo.util;
 
 import java.io.File;
 import java.io.FileInputStream;
