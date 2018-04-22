@@ -61,7 +61,7 @@ public class CheckoutController {
         
         //add the token to the model - this will be used in JavaScript code
         model.addAttribute("clientToken", clientToken);
-
+        
         //serve new.html
         return "new";
     }
@@ -74,12 +74,17 @@ public class CheckoutController {
             @RequestParam("payment_method_nonce") String nonce, Model model, 
             final RedirectAttributes redirectAttributes) {
         
+        //get rid of whitespace
+        amount = amount.trim();
+        
         BigDecimal decimalAmount;
         
         try {
             decimalAmount = new BigDecimal(amount);
         } catch (NumberFormatException e) {
-            redirectAttributes.addFlashAttribute("errorDetails", "Error: 81503: Amount is an invalid format.");
+            String errorMessage = getErrorMessage(amount);
+            redirectAttributes.addFlashAttribute("errorDetails", errorMessage);
+            redirectAttributes.addFlashAttribute("amount", amount);
             return "redirect:checkouts";
         }
 
@@ -108,6 +113,18 @@ public class CheckoutController {
         }
     }
 
+    
+    private String getErrorMessage(String amount) {
+        String errorMessage = amount + " is not a valid price.";
+
+        if (amount.equals("")) {
+            errorMessage = "Please enter a valid price.";
+        } 
+        
+        return errorMessage;
+    }
+    
+    
     @RequestMapping(value = "/checkouts/{transactionId}")
     public String getTransaction(@PathVariable String transactionId, Model model) {
         Transaction transaction;

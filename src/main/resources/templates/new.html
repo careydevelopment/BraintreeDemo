@@ -22,13 +22,21 @@
                 <div class="page-head" style="background-color:#eff3f8;padding-top:40px">
                     <div class="container">
                         <div class="row" style="margin-bottom:30px">
-							<div class="col-md-12">                        
-                        
+							<div class="col-md-12">                   
+								<div th:if="${errorDetails}" class="note note-danger" id="serverSideErrorDiv">
+                                	<h4 class="block">Error</h4>
+                                    <div id="serverSideErrorText" th:text="${errorDetails}"></div>
+                                </div>
+								
+                        		<div class="note note-danger" id="errorDiv" style="display:none">
+                                	<h4 class="block">Error</h4>
+                                    <div id="errorText"></div>
+                                </div>
 		                     <div class="portlet light portlet-fit portlet-datatable ">
 		                         <div class="portlet-title">
 		                             <div class="caption">
-		                                 <i class="icon-settings font-green"></i>
-		                                 <span class="caption-subject font-green sbold uppercase"> Order Listing </span>
+		                                 <i class="fa fa-shopping-cart font-green"></i>
+		                                 <span class="caption-subject font-green sbold uppercase" style="position:relative;top:2px"> Checkout </span>
 		                             </div>
 		                         </div>
 		                         <div class="portlet-body">
@@ -39,34 +47,32 @@
 		                                         <tr role="row" class="heading">
 		                                             <th width="15%"> Order&nbsp;# </th>
 		                                             <th width="15%"> Purchased&nbsp;On </th>
-		                                             <th width="55%"> Customer </th>
+		                                             <th width="55%"> Product </th>
 		                                             <th width="15%"> Price </th>
 		                                         </tr>
-		                                         <tr role="row" class="filter">
+		                                     </thead>
+		                                     <tbody>
+		                                     	<tr role="row" class="filter">
 		                                             <td>12345678</td>
 		                                             <td>01/01/2018</td>
-		                                             <td>Joseph Wannabe</td>
+		                                             <td>Blue Light Saber</td>
 		                                             <td>
 		                                                 <div class="margin-bottom-5">
 		                                                     <div class="input-group input-group-sm">
                                                              	<span class="input-group-addon" id="sizing-addon1">$</span>
-                                                             	<input type="text" class="form-control form-filter input-sm margin-bottom-5 clearfix" maxlength="6" name="amount" id="amount" value="10.00" />
+                                                             	<input type="text" class="form-control form-filter input-sm margin-bottom-5 clearfix" maxlength="6" name="amount" id="amount" th:value="${amount != null} ? ${amount} : '10.00'" />
                                                              </div>
 		                                                 </div>
 		                                             </td>
 		                                         </tr>
-		                                     </thead>
-		                                     <tbody>
 		                                     </tbody>
 		                                 </table>
 		                            	 
 		                            	 <div class="bt-drop-in-wrapper">
 						            	 	<div id="bt-dropin"></div>
 						          		 </div>
-
 						        		 <input type="hidden" id="nonce" name="payment_method_nonce" />
-						        		 <button class="button" type="submit"><span>Test Transaction</span></button>
-		                               
+						        		 <button type="submit" class="btn green" style="margin-top:15px">Test Payment</button>
 		                                </form>
 		                             </div>
 		                         </div>
@@ -92,20 +98,29 @@
 		      }
 		    }, function (createErr, instance) {
 		      form.addEventListener('submit', function (event) {
-		      event.preventDefault();
-		
-		      instance.requestPaymentMethod(function (err, payload) {
-		        if (err) {
-		          console.log('Error', err);
-		          return;
-		        }
-		
-		        // Add the nonce to the form and submit
-		        document.querySelector('#nonce').value = payload.nonce;
-		          form.submit();
-		        });
+			      event.preventDefault();
+			      $('#errorDiv').hide();
+			      $('#serverSideErrorDiv').hide();
+			      
+			      instance.requestPaymentMethod(function (err, payload) {
+			        if (err) {
+			          console.log('Error', err);
+			          showError(err);
+			          return;
+			        }
+			
+			        // Add the nonce to the form and submit
+			        document.querySelector('#nonce').value = payload.nonce;
+			        form.submit();
+			      });
 		      });
 		    });
+		    
+		    function showError(err) {
+		    	var message = String(err);
+		    	$('#errorText').html(message);
+		    	$('#errorDiv').show();
+		    }
 		    /*]]>*/
 		</script>
 		<script th:src="@{/javascript/demo.js}"></script>
