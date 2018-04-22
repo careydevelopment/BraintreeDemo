@@ -100,7 +100,7 @@ public class CheckoutController {
 
         //get the response
         Result<Transaction> result = gateway.transaction().sale(request);
-
+        
         //if it's a successful transaction, go to the transaction results page
         if (result.isSuccess()) {
             Transaction transaction = result.getTarget();
