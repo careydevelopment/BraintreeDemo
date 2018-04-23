@@ -17,7 +17,9 @@ public class BraintreeConfig {
 
     @Bean
     public BraintreeGateway getBraintreeGateway() {
-        File configFile = new File(CONFIG_FILENAME);
+        ClassLoader classLoader = getClass().getClassLoader();
+        File configFile = new File(classLoader.getResource(CONFIG_FILENAME).getFile());
+
         BraintreeGateway gateway = null;
         
         try {
