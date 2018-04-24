@@ -27,7 +27,7 @@ public class BraintreeConfig {
         
         BraintreeGateway gateway = null;
         
-        try {
+            try {
             gateway = BraintreeGatewayFactory.fromConfigMapping(configMap);
         } catch (Exception e) {
             e.printStackTrace();
